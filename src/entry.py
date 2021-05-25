@@ -14,19 +14,58 @@ logging.basicConfig(
 )
 
 questions = [
-    {'Q': "Question 1 is here",
+    {'Q': "Are you concerned that you or your patient could have mucormycosis? Does your patient currently have covid or did they recover from covid in the last 30 days?",
      'A': [
-         ("Answer 1", 0),
-         ("Answer 2", 1),
-         ("Answer 3", 3)]},
-    {'Q': "Another question is here",
-     'A': [("Just one answer", 2),
-           ("wrong answer", 0)]}]
+         ("Yes", 1),
+         ("No", 0)]},
+    {'Q': """Does the patient have any of the following conditions?
+Type 2 diabetes mellitus
+History of organ transplant
+History of cancer (malignancy) or burns
+Malnutrition """,
+     'A': [("Yes", 1),
+           ("No", 0)]},
+    {'Q': """Have they taken oral or injectable corticosteroids like methylprednisolone or dexamethasone? """,
+     'A': [("Yes", 1),
+           ("No", 0)]},
+    {'Q': """Did they have a prolonged ICU stay (more than 4-5 days) for covid treatment? """,
+     'A': [("Yes", 1),
+           ("No", 0)]},
+    {'Q': "Do they have nasal discharge? ",
+     'A': [("Yes", 1),
+           ("Yes, bloody red or blackish colored", 2),
+           ("No", 0)]},
+    {'Q': """Do they have facial swelling numbness or pain?
+Do they have pain over the cheek bones? """,
+     'A': [("Yes", 1),
+           ("No", 0)]},
+    {'Q': "Do they have abnormal blackish discoloration over the eyes, in the skin over the nose or in the mouth? ",
+     'A': [("Yes", 1),
+           ("No", 0)]},
+    {'Q': "Do they have toothaches, feel a loosening of one of their teeth, or feel pain or swelling in the jaw? ",
+     'A': [("Yes", 1),
+           ("No", 0)]},
+    {'Q': "Do they have blurred vision or double vision associated with eye pain? (new onset and not related to spectacles) ",
+     'A': [("Yes", 1),
+           ("No", 0)]},
+    {'Q': "Have they recently recovered from covid and are having chest pain, fever, blood stained cough or breathing difficulties? ",
+     'A': [("Yes", 1),
+           ("No", 0)]},
+]
 
 user_status = {}
 
 initial_data = {'stage': 0, 'score': 0}
 
+def getRiskLevel(score):
+    if score< 3:
+        return "Minimal"
+    elif score <5:
+        return "Low"
+    elif score < 8:
+        return "Moderate"
+    else:
+        return "High"
 
 def entry(bot, update):
     print(user_status)
@@ -66,4 +105,6 @@ def entry(bot, update):
             user_status[chat_id]['stage'] = user_status[chat_id]['stage']+1
         else:
             bot.sendMessage(chat_id=update.message.chat_id,
-                            text="Score = "+str(user_status[chat_id]['score'])+"\nEnd of questions, Send /start to start over", reply_markup=ReplyKeyboardRemove())
+                            text="Score = "+str(user_status[chat_id]['score'])+
+                            "\nYou are "+getRiskLevel(user_status[chat_id]['score'])+" Risk"
+                            "\nEnd of questions, Send /start to start over", reply_markup=ReplyKeyboardRemove())
